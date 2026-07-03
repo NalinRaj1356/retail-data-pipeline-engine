@@ -1,39 +1,31 @@
-# Resilient Retail Inventory Ingestion & Analytics Engine
+# Real-Time UK Rail Transit Ingestion & Analytics Engine
 
-A production-grade, end-to-end data engineering pipeline designed to ingest live retail transactional telemetry, manage target warehouse schemas locally, handle network faults gracefully, and provide structured analytical audit capabilities. 
+A production-grade, end-to-end data engineering pipeline that ingests live, real-time public transit telemetry from the Transport for London (TfL) API, structures complex time-series data elements, and loads them into a relational database warehouse.
 
 ## 🛠️ System Architecture & Data Flow
 
-1. **Ingestion Layer:** Connects to public API gateways to fetch storefront transactional logs using robust HTTP headers.
-2. **Resiliency & Fault-Tolerance:** Engineered with a 3-tier exponential backoff retry mechanism to intercept network outages (e.g., HTTP 503) and features an automated failover mock stream to protect pipeline execution continuity.
-3. **Storage & Warehousing:** Migrates data away from volatile flat files into an organized relational SQLite data warehouse (`pipeline_warehouse.db`) utilizing historical append engines.
-4. **Analytics Layer:** A dedicated script leveraging Pandas and SQL logic to extract business-critical key performance indicators (KPIs) directly from the live database.
-5. **Automation Scheduler:** Configured via a Unix background daemon (`cron`) to manage execution on a clean production cadence.
+1. **Live Ingestion Layer:** Establishes direct connections to the public TfL API gateway to scrape real-time arrival vectors for major transport hubs like London Waterloo.
+2. **Data Transformation & Engineering:** Processes raw nested JSON streams, handles chronological ISO timestamp formatting, and dynamically derives business-critical operational metrics (e.g., calculating real-time arrival proximity in minutes).
+3. **Relational Warehousing:** Persists streaming data assets into an optimized SQLite data warehouse (`pipeline_warehouse.db`) via transactional append operations to build a historical analytical timeline.
+4. **Automation Scheduler:** Managed by a Unix background daemon (`cron`) configured to run on a stable production cadence with comprehensive error-stream redirection logging.
 
 ## 📂 Project Directory Map
 
-* `retail_pipeline.py` — Core ETL pipeline script handling network resiliency, data transformation, and warehouse loading.
-* `query_warehouse.py` — Analytics script executing SQL queries to generate inventory audit metrics.
-* `pipeline_warehouse.db` — Relational database storage layer tracking transactional history (untracked in version control).
-* `retail_pipeline.log` — Dedicated logging file tracking pipeline execution status and error streams.
-* `.gitignore` — Security filter ensuring sensitive configuration keys and binary database files remain localized.
+* `rail_pipeline.py` — Core ETL pipeline script handling live network extraction, transformation logic, and warehouse ingestion.
+* `pipeline_warehouse.db` — Local relational database storage layer tracking real-time transit history (excluded from source control).
+* `rail_pipeline.log` — Active system log file capturing print statements and network exception streams.
+* `.gitignore` — Security filter ensuring localized database binaries and configuration logs remain secure.
 
-## 📈 Enterprise Retail Schema Design
+## 📈 Live Transit Warehouse Schema Design
 
-The ingestion pipeline maps unstructured data streams into a structured relational table named `retail_inventory`:
+The pipeline maps unstructured streaming payloads into a structured relational table named `live_uk_rail`:
 
 | Column Name | Data Type | Description |
 | :--- | :--- | :--- |
-| **SKU** | TEXT | Unique stock-keeping unit identifier for retail items. |
-| **Product_Name** | TEXT | Descriptive title of the retail asset. |
-| **Category** | TEXT | Operational department classification (e.g., Beauty, Healthcare). |
-| **Current_Stock** | INTEGER | Real-time units remaining in inventory. |
-| **Units_Sold_Today**| INTEGER | Total transaction volume recorded for the active date. |
-| **Restock_Alert_Flag**| INTEGER | Binary business exception flag (1 = Active, 0 = Healthy). Triggers automatically if stock drops below 20 units. |
-| **Ingested_At** | TEXT | Chronological timestamp marking database warehouse insertion. |
-
-## 🚀 Key Engineering Demonstrations
-
-* **Automated Exception Handling:** Demonstrates how to design systems that self-heal during third-party service degradation using backoff algorithms.
-* **Decoupled Business Logic:** Implements logic that automatically isolates low-stock conditions to assist logistics teams with automated replenishment.
-* **Secure Environment Management:** Separates infrastructure keys and credentials from source-controlled code files.
+| **Train_ID** | TEXT | Unique vehicle identifier tracking the specific active rolling stock. |
+| **Line_Name** | TEXT | The operational transit line (e.g., Bakerloo, Jubilee). |
+| **Destination** | TEXT | Target station terminal destination for the approaching train. |
+| **Minutes_Until_Arrival**| REAL | Calculated delta marking exactly how close the train is to the platform. |
+| **Expected_Arrival_Time**| TEXT | Formatted relational timestamp indicating estimated arrival. |
+| **Current_Location** | TEXT | Real-time physical track sector telemetry or last recorded station block. |
+| **Ingested_At** | TEXT | High-precision chronological marker capturing database load execution time. |
