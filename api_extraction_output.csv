@@ -1,0 +1,7 @@
+Metadata_Key,Metadata_Value,Ingested_At
+Accept,application/json,2026-06-26 22:04:09
+Accept-Encoding,"gzip, deflate, br, zstd",2026-06-26 22:04:09
+Host,httpbin.org,2026-06-26 22:04:09
+User-Agent,DataPipelineEngine/1.0,2026-06-26 22:04:09
+X-Amzn-Trace-Id,Root=1-6a3ee949-56d019dd1d01688a27757100,2026-06-26 22:04:09
+X-Api-Key,my_secure_analytics_passcode_123,2026-06-26 22:04:09

@@ -1,0 +1,5 @@
+[2026-07-03 10:49:51] Ingestion job initialized.
+Extraction Successful! Status 200 OK.
+Load Successful! Appended 6 rows to database warehouse: pipeline_warehouse.db
+[2026-07-03 11:00:03] Ingestion job initialized.
+PIPELINE ERROR: HTTP Status Code 503
